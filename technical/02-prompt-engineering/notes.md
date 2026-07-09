@@ -1,4 +1,4 @@
-# [Topic Name]
+# Prompt Engineering
 
 **Date:** 2026-04-25 | **Track:** Technical | **Session:** XX
 
@@ -6,9 +6,9 @@
 
 - 7 style prompt engineering technique
   - Role: The persona
-  - Task: The goal. What the LLM wants to achieve. Better to have task as one liner
+  - Task: The goal. What the LLM wants to achieve. Better to have task as one liner. Taks will be used by the LLM to strategize its actions. it is the high level goal
   - Context: Provide background information for LLM to reason so that the LLM does not assume
-  - Reasoning: How we want the LLM to approach the problem
+  - Reasoning: How we want the LLM to approach the problem. It is the step by step execution which the LLM needs to follow.
   - Rules: what we want the LLM to do and what we want the LLM to not do.
   - Stop Conditions: control the output from the LLM. control how much the LLM should generate
   - Output Style: How we want the output to look like
@@ -44,7 +44,8 @@
 
 ## Insights & Opinions
 
--
+- Why do we need Task and Reasoning
+ - Writing a particular statement in a prompt 2 times increased the attention mechanism of the LLM to follow the instructions properly
 
 ## Questions / Gaps
 
