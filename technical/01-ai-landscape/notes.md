@@ -5,6 +5,11 @@
 ## Key Concepts
 
 - Context Engineering: It is the systemic practice of curating, structuring and managing everything that is fed into an AI model like an LLM.
+- Components of AI Apps
+  - System Prompt
+  - LLM
+  - Memory
+  - Tools
 
 ## What I Built / Tried
 

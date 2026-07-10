@@ -42,6 +42,55 @@
 
 - Output Style: Two table, one with road trip and other one with city exploration.
 
+### Markdown Prompting Technique
+
+- Why
+  - LLMs are pattern-matching engines; they process raw text. If you feed them a wall of text, their attention mechanism diffuses. If you use basic Markdown syntax (#, -, ), you force a hierarchical semantic structure onto the prompt.
+
+- Components
+  - `# SYSTEM ROLE`: Defines the operational boundaries and persona. This establishes the baseline weights for how the model should behave and reason
+  - `## CONTEXT`: The background data. This is where you inject the necessary external state or data payload required to execute the task
+  - `## TASK`: The single, clear objective. What exactly is the model supposed to execute?
+  - `## CONSTRAINTS`: The hard rules. Using bullet points here limits the search space and dictates what the model must not do
+  - `## EXAMPLES` (Few-Shot): The expected input/output contract. This proves to the model what a successful execution looks like
+  - `## OUTPUT FORMAT`: The strict definition of the return payload, locking down the structure so your application can parse it reliably.
+
+- Example:
+
+```
+# ROLE
+You are an uncompromising Senior Technical Recruiter parsing backend engineering profiles.
+
+## CONTEXT
+The hiring team needs a rapid assessment of an applicant's resume against our current tech stack requirements. We do not care about frontend skills.
+* Target Stack: Python, FastAPI, Postgres.
+* Applicant Resume: [Insert Raw Text Here]
+
+## TASK
+Evaluate the applicant's resume against the Target Stack and determine an initial screening decision.
+
+## CONSTRAINTS
+* Do not hallucinate skills not explicitly stated in the resume.
+* Ignore any experience older than 5 years.
+* If Python experience is less than 2 years, immediately reject.
+
+## OUTPUT FORMAT
+Provide the response using the following structure:
+**Decision:** [Proceed / Reject]
+**Reasoning:** [One sentence explanation]
+**Missing Core Skills:** [Bullet list of missing Target Stack items]
+```
+
+### Keyword Prompting
+
+- Keyword Prompting is a blunt instrument. It is the practice of stripping away grammar, syntax, and structural logic entirely, and instead bombarding the AI with a dense, comma-separated list of high-value trigger words
+- Usage:
+  - Image & Video Generation (Diffusion models)
+  - Traditional Information Retrieval (Search Engines)
+- Example:
+  - Natural Language Prompt: "Please draw me a picture of a futuristic city at night while it is raining, and make it look like a high-quality 3D render."
+  - Keyword Prompt: "cyberpunk city, neon, heavy rain, night, 8k resolution, unreal engine 5, photorealistic, volumetric lighting."
+
 ## Insights & Opinions
 
 - Why do we need Task and Reasoning
