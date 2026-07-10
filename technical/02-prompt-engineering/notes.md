@@ -141,7 +141,7 @@ Extract the technical failure points from the `[RAW_TICKET]` and map them to the
 
 ```For example, "every morning" would be:
   schedule="BEGIN:VEVENT
-  RRULE:FREQ=DAILY;BYHOUR=9;BYMIN UTE=0;BYSECOND=0
+  RRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0
   END:VEVENT"
 ```
 
