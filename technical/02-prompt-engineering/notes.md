@@ -4,25 +4,25 @@
 
 ## Key Concepts
 
-- 7 style prompt engineering technique
-  - Role: The persona
-  - Task: The goal. What the LLM wants to achieve. Better to have task as one liner. Taks will be used by the LLM to strategize its actions. it is the high level goal
-  - Context: Provide background information for LLM to reason so that the LLM does not assume
-  - Reasoning: How we want the LLM to approach the problem. It is the step by step execution which the LLM needs to follow.
-  - Rules: what we want the LLM to do and what we want the LLM to not do.
-  - Stop Conditions: control the output from the LLM. control how much the LLM should generate
-  - Output Style: How we want the output to look like
-
-## What I Built / Tried
-
 ### 7 style prompt engineering technique
 
-- Role: You are an Indian Travel Agent. You have experience in planning trips for people travelling
+- Role: The persona
+- Task: The goal. What the LLM wants to achieve. Better to have task as one liner. Taks will be used by the LLM to strategize its actions. it is the high level goal
+- Context: Provide background information for LLM to reason so that the LLM does not assume
+- Reasoning: How we want the LLM to approach the problem. It is the step by step execution which the LLM needs to follow.
+- Rules: what we want the LLM to do and what we want the LLM to not do.
+- Stop Conditions: control the output from the LLM. control how much the LLM should generate
+- Output Style: How we want the output to look like
+
+- Example:
+
+```
+Role: You are an Indian Travel Agent. You have experience in planning trips for people travelling
   to north India
 
-- Task: Plan a 3 day trip from Kanpur to Srinagar(Kashmir)
+Task: Plan a 3 day trip from Kanpur to Srinagar(Kashmir)
 
-- Context:
+Context:
   1. I am a pure veg person,
   2. I am travelling by my bike,
   3. I drive at a speed of 80Kmph,
@@ -30,17 +30,18 @@
   5. I will leave on 26th April 2026,
   6. I don't ride bike during nights as I have issues.
 
-- Reasoning: First Plan the road trip from Kanpur to Srinagar and then plan the city exploration in
+Reasoning: First Plan the road trip from Kanpur to Srinagar and then plan the city exploration in
   and around srinagar.
 
-- Rules:
+Rules:
   1. Make sure the entire trip is concluded in 3 days, including the road travel and city exploration. Keep 2 addtional days for trip back to kanpur.
   2. Suggest proper rest stops with refill options.
 
-- Stop Conditions: just generate the plan in two table with no additional supporting text. stop once
+Stop Conditions: just generate the plan in two table with no additional supporting text. stop once
   the plan as a table is ready
 
-- Output Style: Two table, one with road trip and other one with city exploration.
+Output Style: Two table, one with road trip and other one with city exploration.
+```
 
 ### Markdown Prompting Technique
 
@@ -91,10 +92,48 @@ Provide the response using the following structure:
   - Natural Language Prompt: "Please draw me a picture of a futuristic city at night while it is raining, and make it look like a high-quality 3D render."
   - Keyword Prompt: "cyberpunk city, neon, heavy rain, night, 8k resolution, unreal engine 5, photorealistic, volumetric lighting."
 
+### JSON Style prompting
+
+- What:
+  - A JSON Style Transfer prompt is a defensive engineering pattern
+  - It completely replaces the original text's tone, formatting, and vocabulary with a deterministic data structure
+- How:
+  - Kill the Persona: Explicitly instruct the model that it is a data transformation pipeline
+  - Define the Translation Rules: Give it strict rules on how to convert subjective text into objective metrics
+  - Enforce Type Coercion: Explicitly tell the model how to handle edge cases (e.g., "If a number is not found, output null, do not guess")
+  - Lock the Schema: Provide the exact JSON structure, including expected keys and allowed values (Enums).
+- Example:
+
+```
+# SYSTEM ROLE
+You are a deterministic data normalization API. Your sole function is to ingest unstructured customer support tickets, strip all emotion and conversational filler, and output a strictly typed JSON object containing objective engineering data.
+
+## TASK
+Extract the technical failure points from the `[RAW_TICKET]` and map them to the `OUTPUT SCHEMA`.
+
+## CONSTRAINTS
+- **No Hallucination:** If a field is not explicitly mentioned in the text, you MUST output `null`.
+- **Tone Eradication:** Translate all user frustration into objective technical failure states. (e.g., "The stupid spinning wheel" becomes "infinite loading state").
+- **Enum Enforcement:** The `severity_level` MUST be evaluated based on business impact and mapped strictly to one of these strings: ["P0_CRITICAL", "P1_HIGH", "P2_MEDIUM", "P3_LOW"].
+- **Formatting:** Output ONLY raw, valid JSON. Do not wrap in markdown blocks. Do not add conversational text.
+
+## OUTPUT SCHEMA
+{
+  "incident_title": "string (max 50 chars)",
+  "severity_level": "enum string",
+  "affected_platform": "string (e.g., iOS, Web, Android) | null",
+  "technical_translation": "string (objective summary of the failure)",
+  "user_workaround_mentioned": "boolean | null"
+}
+
+## INPUT
+[RAW_TICKET]: "I am so sick of this! I tried to check out on my iPhone 13 and the screen just went completely white after I put in my credit card. I refreshed like five times and it still won't let me buy the shoes. Fix this immediately!"
+```
+
 ## Insights & Opinions
 
 - Why do we need Task and Reasoning
-- Writing a particular statement in a prompt 2 times increased the attention mechanism of the LLM to follow the instructions properly
+  - Writing a particular statement in a prompt 2 times increased the attention mechanism of the LLM to follow the instructions properly
 
 ### GPT-5 System Prompt Insights
 
@@ -102,7 +141,7 @@ Provide the response using the following structure:
 
 ```For example, "every morning" would be:
   schedule="BEGIN:VEVENT
-  RRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0;BYSECOND=0
+  RRULE:FREQ=DAILY;BYHOUR=9;BYMIN UTE=0;BYSECOND=0
   END:VEVENT"
 ```
 
