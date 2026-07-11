@@ -51,7 +51,7 @@
 
 ## Insights & Opinions
 
--
+- The paper attention is all you need mentioned that they used 6 layers of encoders an 6 layers of decoders
 
 ## Questions / Gaps
 
