@@ -38,6 +38,13 @@
 
 ### Deep Learning -> RNN -> LSTM -> GRU -> Attention Mechanisms -> Encoder Decoder Arch -> Transformer Arch -> BERT -> **GPT**
 
+- Transformer
+  - Components
+    - Encoders stacked on top of each other
+    - Decoders stacked on top of each other
+  - Flow
+    - Input -> Encoder -> Decoder -> Predicted output
+
 ## What I Built / Tried
 
 -
