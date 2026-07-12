@@ -94,6 +94,10 @@
       - save the order in the DB
       - return confirmation
 
+- 3 layer architecture
+  - controller
+  - manager
+
 ## What I Built / Key Takeaways
 
 -
@@ -104,22 +108,81 @@
 
 ## Open Questions
 
--
+- Architecture
+  ![Architecture](./Screenshot%202026-07-11%20193257.png)
 
 ```mermaid
-block
-columns 1
-  db(("DB"))
-  blockArrowId6<["&nbsp;&nbsp;&nbsp;"]>(down)
-  block:ID
-    A
-    B["A wide one in the middle"]
-    C
+---
+config:
+  theme: redux
+  layout: elk
+---
+flowchart TB
+ subgraph s1["Frontend"]
+        n5["Menu"]
+        n6["Orders"]
+        n7["Admin"]
+        n8["AI Recommendation"]
   end
-  space
-  D
-  ID --> D
-  C --> D
-  style B fill:#969,stroke:#333,stroke-width:4px
+ subgraph s2["API Layer"]
+        n10["/api/menu"]
+        n11["/api/oders"]
+        n12["/api/admin"]
+        n13["/api/admin"]
+  end
+ subgraph s3["Coordinators"]
+        n14["get meunu usecase"]
+        n15["place order usecase"]
+        n16["analytics usecase"]
+        n17["recommendation usecase"]
+  end
+ subgraph s4["Specialists"]
+        n18["menu repo"]
+        n20["customer repo"]
+        n21["order repo"]
+        n19["pricing policy"]
+        n22["analytics repo"]
+        n23["recommendation repo"]
+  end
+    n5 --> n10
+    n10 --> n14
+    n14 --> n18
+    n18 --> n24["Supabase"]
+    n6 --> n11
+    n11 --> n15
+    n15 --> n18 & n20 & n21 & n19
+    n7 --> n12
+    n12 --> n16
+    n16 --> n21 & n22
+    n8 --> n13
+    n13 --> n17
+    n17 --> n23
+    n23 --> n25["FastAPI Recommendation"]
+    n25 --> n26["Recommendation"]
+    n19 --> n24
+    n20 --> n24
+    n21 --> n24
+    n22 --> n24
 
+    n5@{ shape: rounded}
+    n6@{ shape: rounded}
+    n7@{ shape: rounded}
+    n8@{ shape: rounded}
+    n10@{ shape: rounded}
+    n11@{ shape: rounded}
+    n12@{ shape: rounded}
+    n13@{ shape: rounded}
+    n14@{ shape: rounded}
+    n15@{ shape: rounded}
+    n16@{ shape: rounded}
+    n17@{ shape: rounded}
+    n18@{ shape: rounded}
+    n20@{ shape: rounded}
+    n21@{ shape: rounded}
+    n19@{ shape: rounded}
+    n22@{ shape: rounded}
+    n23@{ shape: rounded}
+    n24@{ shape: rounded}
+    n25@{ shape: rounded}
+    n26@{ shape: rounded}
 ```
