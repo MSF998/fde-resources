@@ -5,7 +5,7 @@
 <!-- - [x] 01-topic-name -->
 
 - [x] [01-ai-landscape](./technical/01-ai-landscape/)
-- [ ] [02-prompt-engineering](./technical/02-prompt-engineering/)
+- [] [02-prompt-engineering](./technical/02-prompt-engineering/)
 
 ## Consultancy Track
 
