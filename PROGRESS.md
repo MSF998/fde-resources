@@ -11,6 +11,8 @@
 
 <!-- - [x] 01-topic-name -->
 
+- [] [01-client-psychology](/consultancy/01-client-psychology/)
+
 ## Weekend Sessions
 
 <!-- - [x] 01-session-name -->
