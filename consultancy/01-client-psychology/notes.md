@@ -27,6 +27,10 @@
 4. End-User
    - Knows edge cases.
 
+#### Trust Vs Agreement Matrix
+
+![Matrix](./Screenshot%202026-07-12%20231532.png)
+
 ### FDE is a mindset
 
 - The ability to hold the business and the technical constraint in your head simultaneoulsy, in a live client conversation and make good decisions about the tradeoff in real time.
