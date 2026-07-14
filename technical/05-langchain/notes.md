@@ -148,7 +148,8 @@ else:
   print(response.content)
 ```
 
-- langhcain structured tools and multiple tool calls
+- langhcain structured tools and multiple tool calls.
+- tools will be called paralelly
 
 ```python
 from langchain_core.tools import tool
@@ -176,7 +177,7 @@ llm = ChatOpenAI(
     model="gpt-5-mini"
 )
 #Tell your LLM about tools available
-llm_with_tools = llm.bind_tools([get_city_weather])
+llm_with_tools = llm.bind_tools([get_city_weather, duckduckgo_search])
 
 # Make your system prompt
 system_message = SystemMessage(content = sysmsg)
@@ -208,6 +209,59 @@ if(response.tool_calls):
 else:
   print(response.content)
   messages_to_send.append(response)
+```
+
+- if we want the llm to call tool in a specific sequence
+- recieve the first tool call's response then based on that call the next tool
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage, SystemMessage
+sysmsg = """
+Imagine you are a helpful travel assistant.
+
+Answer the user's query carefully and call tools when necessary.
+
+You have access to:
+- get_city_weather: Use for weather information from the available database.
+- duckduckgo_search: Use for recent information or web searches.
+"""
+
+llm = ChatOpenAI(
+    model="gpt-5-mini"
+)
+
+llm_with_tools = llm.bind_tools(
+    [get_city_weather, duckduckgo_search]
+)
+
+system_message = SystemMessage(content=sysmsg)
+
+user_query = input("Please enter your message: ")
+print()
+
+user_message = HumanMessage(content=user_query)
+
+messages_to_send = [
+    system_message,
+    user_message
+]
+
+response = llm_with_tools.invoke(messages_to_send)
+while response.tool_calls:
+    # Preserve the AIMessage containing all tool requests
+    messages_to_send.append(response)
+    # Execute every tool requested in this AIMessage
+    for tool_call in response.tool_calls:
+        tool_name = tool_call["name"]
+        # Find the tool in the repository and execute it
+        tool_output = tool_repo[tool_name].invoke(tool_call)
+        messages_to_send.append(tool_output)
+    response = llm_with_tools.invoke(messages_to_send)
+    print(response.content)
+else:
+    messages_to_send.append(response)
+    print(response.content)
 ```
 
 ## What I Built / Tried
