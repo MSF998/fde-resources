@@ -1,3 +1,16 @@
+### To remeber
+
+- Longer prompts are fine
+- Build model specific prompts
+  - Claude prefers XML
+  - GPT prefers markdown
+- Keep updaing prompts when models update
+- LLMs degrade when overwhelmed with irrelevant tokens
+  - Curate
+- Hallucinations increase with noise
+- Start small
+- Keep your prompts where specific
+
 ### GPT-5 System Prompt Insights
 
 - a piece of formatting based on the iCalendar (RFC 5545) specification. Specifically, it is an RRULE (Recurrence Rule) used by calendar applications to define how often an event repeats
@@ -28,3 +41,18 @@
   - Freshness: If up-to-date information on a topic could potentially change or enhance the answer, call the `web` tool any time you would otherwise refuse to answer a question because your knowledge might be out of date.
   - Niche Information: If the answer would benefit from detailed information not widely known or understood (which might be found on the internet), such as details about a small neighborhood, a less well-known company, or arcane regulations, use web sources directly rather than relying on the distilled knowledge from pretraining.
   - Accuracy: If the cost of a small mistake or outdated information is high (e.g., using an outdated version of a software library or not knowing the date of the next game for a sports team), then use the `web` tool.
+
+### Gaps
+
+- Learn more on Harness Engineering
+  - the discipline of designing the environment, tools, and feedback loops that govern autonomous AI agents
+    - System Prompt
+    - Tool Definations
+    - Memory
+    - Routing Logic
+    - Output Validation
+    - Feedback Loop
+
+| Hallucination | Confabulation           |
+| ------------- | ----------------------- |
+| Fabrication   | Plausible but incorrect |
