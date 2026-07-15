@@ -67,7 +67,12 @@
 
 ## Key Principles
 
--
+- **Expectation is always the outcome**
+- Focus on the outcome, use T&M where we are uncertain, switch to fixed price once requirements are established
+- **It all boils down to who can convince whom**
+- Estabish my domain competency at the very beginning
+- math behind the commercial model should be in my fingertips
+- always have a plan B & C
 
 ## How This Applies to AI Projects
 
