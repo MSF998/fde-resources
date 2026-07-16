@@ -1,281 +1,597 @@
-# Langchain
+# Langchain & Pydantic
 
-**Date:** 2026-14-14 | **Track:** Technical | **Session:** XX
+**Date:** 2026-17-16 | **Track:** Technical | **Session:** XX
 
 ## Key Concepts
 
-### Principles to remeber while building any AI app
+- When the number of tools increase we bring in the concept of Agents
+- Or we can have a planner LLM (Orchestrator)
+  - We only tell it about tools but not access to it
+  - It will only give out a path/execution plan
+  - The plan will be given to the tool bound LLM
 
-1. Who is talking (Session ID)
-2. What should the your model see
-3. Structure of the information
-4. How much history should LLM see
-5. What happens when we scale
-
-### Tool Calling in Langchain
-
-- Tool calling without langchain
+### Chat prompt template
 
 ```python
-user_query = input("Enter your query: ")
-prompt = f"""Imagine you're a helpful assistant, answer the user query-
-I have a function 'weather_api' return the name of 'weather_api' only with no other text if the user asks a weather related question else answer normally
-The function has no args, and returns the temperature in string format.
-User query -
-{user_query}"""
-response = llm.invoke(prompt)
-if(response.content == 'weather_api'):
-  output = weather_api()
-  new_query = user_query + response.content + f"Function output :{output}"
-  response = llm.invoke(new_query)
-  print(response.content)
+from langchain_core.prompts import ChatPromptTemplate
 
-else:
-  response.content
+order_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        """
+Extract the following information from the restaurant kiosk conversation:
+
+- items: item name and quantity
+- special_instruction
+- order_type
+- payment_method
+- discount_percent
+
+Do not invent missing information.
+Return the extracted information clearly.
+"""
+    ),
+    (
+        "human",
+        "Conversation:\n{conversation}"
+    )
+])
+
+order_chain = order_prompt | llm
+
+response = order_chain.invoke({
+    "conversation": order_1
+})
+
+print(response.content)
 ```
 
-- Langchain tool defination
+```python
+order_prompt.invoke({"conversation": "Hi"})
+
+# Output:
+# ChatPromptValue(messages=[SystemMessage(content='\nExtract the following information from the restaurant kiosk conversation:\n\n- items: item name and quantity\n- special_instruction\n- order_type\n- payment_method\n- discount_percent\n\nDo not invent missing information.\nReturn the extracted information clearly.\n', additional_kwargs={}, response_metadata={}), HumanMessage(content='Conversation:\nHi', additional_kwargs={}, response_metadata={})])
+```
+
+- Improving the prompt
 
 ```python
+from langchain_core.prompts import ChatPromptTemplate
+
+order_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        """
+Extract the order information from the restaurant kiosk conversation.
+
+Return only a Python dictionary in exactly this structure:
+
+{{
+    "items": [
+        {{
+            "name": "item name",
+            "quantity": 1
+        }}
+    ],
+    "special_instruction": "instruction",
+    "order_type": "dine_in or takeaway",
+    "payment_method": "cash, card or upi",
+    "discount_percent": 10,
+}}
+
+Rules:
+- quantity must be an integer.
+- discount_percent must be a number or null.
+- discount_requested must be true or false.
+- Use null when information is missing.
+- Do not invent information.
+- Do not add explanations or Markdown.
+"""
+    ),
+    (
+        "human",
+        "Conversation:\n{conversation}"
+    )
+])
+
+order_chain = order_prompt | llm
+
+response = order_chain.invoke({
+    "conversation": order_1
+})
+
+print(response.content)
+# Output:
+
+{
+    "items": [
+        {
+            "name": "paneer wrap",
+            "quantity": 2
+        },
+        {
+            "name": "cold coffee",
+            "quantity": 1
+        }
+    ],
+    "special_instruction": "Make one wrap without onions.",
+    "order_type": "takeaway",
+    "payment_method": "upi",
+    "discount_percent": 10
+}
+```
+
+- We use two curly braces to escape LCEL syntax. One curly is what langchain thinks as an input. Two curly escapes it
+
+- LLMs cannot maintain consistency due their probabilistic nature
+- Enter pydantic to maintain structure information
+
+### Pydantic
+
+- A python class is simply a customized data structure
+- ```python
+    from pydantic import BaseModel, Field
+    from typing import Literal
+
+    class Order(BaseModel):
+    name: str
+    quantity: int = Field(gt=0)
+  ```
+
+- `Field` is used to desribe the variable
+- Calling it with LLM
+
+```python
+    structured_llm = llm.with_structured_output(OrderItem)
+    response = structured_llm.invoke(
+    "The customer ordered three paneer wraps."
+    )
+    response.model_dump()
+    # {'name': 'Paneer Wrap', 'quantity': 3}
+
+```
+
+- Langchain is going to convert the pydantic schema into a prompt and give to the LLM
+- Pydantic validates the output which the LLM generates
+
+- A complete approach
+
+```python
+from pydantic import BaseModel, Field
+from typing import Literal
+
+class KioskOrder(BaseModel):
+    items: list[OrderItem] # Takes in multiple orders
+    special_instruction: str | None = None
+    order_type: Literal["dine_in", "takeaway"]
+    payment_method: Literal["cash", "card", "upi"]
+    discount_percent: int | None = Field(default=None, ge=0, le=100)
+```
+
+- langchain tool with sql
+
+```python
+import sqlite3
 from langchain_core.tools import tool
 
 @tool
-def get_city_weather(city: str):
-    """
-    Fetches the current weather conditions for a specified city.
+def place_order(items: list[dict], order_type: str,
+                payment_method: str, discount_percent: int = 0):
+    """Calculate and save a restaurant order."""
 
-    Use this tool whenever a user asks about the weather, temperature,
-    or humidity in a specific location.
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
 
-    Args:
-        city (str): The name of the city to check the weather for.
-                    Examples: "Delhi", "Mumbai", "Bengaluru", "New York".
+        saved_items, subtotal = [], 0
 
-    Returns:
-        dict: A dictionary containing the weather details with the following keys:
-            - temperature (int): The current temperature in degrees Celsius.
-            - humidity (int): The relative humidity percentage.
-            - condition (str): A brief, readable description of the weather
-                               (e.g., "Hot", "Humid", "Pleasant", "Unknown").
-    """
-    fake_weather_db = {
-        "Delhi": {"temperature": 34, "humidity": 48, "condition": "Hot"},
-        "Mumbai": {"temperature": 31, "humidity": 78, "condition": "Humid"},
-        "Bengaluru": {"temperature": 27, "humidity": 60, "condition": "Pleasant"},
-    }
-    return fake_weather_db.get(
-        city,
-        {"temperature": 30, "humidity": 50, "condition": "Unknown"}
-    )
+        for item in items:
+            row = conn.execute(
+                "SELECT price FROM menu_items WHERE item_code = ?",
+                (item["item_code"],)
+            ).fetchone()
 
-# We call it using
-get_city_weather.invoke({"city":"Delhi"})
-# {'temperature': 34, 'humidity': 48, 'condition': 'Hot'}
+            if not row:
+                return {"status": "failed", "reason": f"Invalid item: {item['item_code']}"}
+
+            price = row[0]
+            line_total = price * item["quantity"]
+            subtotal += line_total
+            saved_items.append((item["item_code"], item["quantity"], price, line_total))
+
+        total = round(subtotal * (1 - discount_percent / 100))
+
+        cur = conn.execute("""
+            INSERT INTO orders
+            (order_type, payment_method, discount_percent, total_amount)
+            VALUES (?, ?, ?, ?)
+        """, (order_type, payment_method, discount_percent, total))
+
+        order_id = cur.lastrowid
+
+        conn.executemany("""
+            INSERT INTO order_items
+            (order_id, item_code, quantity, unit_price, line_total)
+            VALUES (?, ?, ?, ?, ?)
+        """, [(order_id, *item) for item in saved_items])
+
+    return {"order_id": order_id, "status": "placed", "total_amount": total}
+
 ```
 
-- maintain tool instruction in the doc string of the function which will be appended to the llm's system prompt
-- maintain a tool repo as dict. where the key is the tool name and value is the tool
-  - ```python
-      tool_repo = {'get_city_weather': get_city_weather, 'add_two_number': add_two_number}
-    ```
-
-- bind tools with llm object example
+- pydantic schema for order
 
 ```python
-sysmsg = "Imagine you're a helpful travel assistant, please answer the query carefuly, call the tools if necessary, don't followup just answer"
-from langchain.messages import HumanMessage, SystemMessage, ToolMessage
+class OrderItem(BaseModel):
+    item_code: Literal[
+        "paneer_tikka", "paneer_wrap", "veg_burger",
+        "french_fries", "cold_coffee"
+    ]
+    quantity: int = Field(gt=0)
 
-# Defining your LLM
-llm = ChatOpenAI(
-    model="gpt-5-mini"
+
+class KioskOrder(BaseModel):
+    items: list[OrderItem]
+    order_type: Literal["dine_in", "takeaway"]
+    payment_method: Literal["cash", "card", "upi"]
+    discount_percent: int = Field(default=0, ge=0, le=100)
+```
+
+- binding tool
+
+```python
+structured_llm = llm.with_structured_output(KioskOrder)
+tool_llm = llm.bind_tools([place_order])
+```
+
+- Extracting the order
+
+```python
+extract_prompt = ChatPromptTemplate.from_messages([
+    ("system", "Extract the restaurant order. Use menu item codes. Stick to the definition and values"),
+    ("human", "{conversation}")
+])
+
+extract_chain = extract_prompt | structured_llm
+
+order = extract_chain.invoke({"conversation": order_1})
+print(order)
+
+# items=[OrderItem(item_code='paneer_wrap', quantity=2), OrderItem(item_code='cold_coffee', quantity=1)] order_type='takeaway' payment_method='upi' discount_percent=10
+
+order.model_dump()
+# {'items': [{'name': 'PWRAP', 'quantity': 2},
+#   {'name': 'CCOFFEE', 'quantity': 1}],
+#  'special_instruction': 'Make one wrap without onions.',
+#  'order_type': 'takeaway',
+#  'payment_method': 'upi',
+#  'discount_percent': 10}
+```
+
+- placing the order
+
+```python
+from langchain_core.prompts import MessagesPlaceholder
+from langchain_core.messages import HumanMessage, ToolMessage
+import json
+
+tool_prompt = ChatPromptTemplate.from_messages([
+    ("system", "Place the order using the tool. After it is saved, confirm briefly."),
+    MessagesPlaceholder("messages")
+])
+
+tool_chain = tool_prompt | tool_llm
+
+user_message = HumanMessage(
+    content=f"Place this order:\n{order.model_dump_json()}"
 )
-#Tell your LLM about tools available. it holds	Schema/Description
-llm_with_tools = llm.bind_tools([get_city_weather])
-query = "What is the weather like in Delhi?"
-messages_to_send = [sysmsg] + [HumanMessage(query)]
-response = llm_with_tools.invoke(messages_to_send)
 
-# Tool call is supposed to be done by langchain not the llm
-tool_details = response.tool_calls[0]
-tool_message = tool_repo[tool_name].invoke(tool_details)
-messages_to_send.append(response)
-messages_to_send.append(tool_message)
-llm.invoke(messages_to_send).content
-```
+tool_request = tool_chain.invoke({
+    "messages": [user_message]
+})
 
-- polished way of tool calling
+print(tool_request.tool_calls)
+#[{'name': 'place_order', 'args': {'items': [{'item_code': 'paneer_wrap', 'quantity': 2}, {'item_code': 'cold_coffee', 'quantity': 1}], 'order_type': 'takeaway', 'payment_method': 'upi', 'discount_percent': 10}, 'id': 'call_RsGwgRyDDRRa7I94NzdjsaZj', 'type': 'tool_call'}]
 
-```python
-message_to_send = []
-sysmsg = "IMagine you're a helpful travel assistant, please answer the query carefuly, call the tools if necessary, don't followup just answer"
-from langchain.messages import HumanMessage, SystemMessage, ToolMessage
+import json
+from langchain_core.messages import HumanMessage, ToolMessage
 
-# Defining your LLM
-llm = ChatOpenAI(
-    model="gpt-5-mini"
-)
-#Tell your LLM about tools available
-llm_with_tools = llm.bind_tools([get_city_weather])
-
-# Make your system prompt
-system_message = SystemMessage(content = sysmsg)
-# Make your user prompt
-user_query = input("Please enter your message: ")
-print()
-user_message = HumanMessage(content = user_query)
-
-# COmbine the messages
-messages_to_send = [system_message, user_message]
-
-
-response = llm_with_tools.invoke(messages_to_send)
-
-# Append the AI message
-messages_to_send.append(response)
-
-if(response.tool_calls):
-  # Get details of the first tool
-  tool_details = response.tool_calls[0]
-  # GEt the name of the tool to call
-  tool_name = tool_details['name']
-  # Calling that tool from repo with all tool details
-  tool_output = tool_repo[tool_name].invoke(tool_details) # Ooutput will be tool message
-
-  messages_to_send.append(tool_output)
-  response = llm_with_tools.invoke(messages_to_send)
-  print(response.content)
-else:
-  print(response.content)
-```
-
-- langhcain structured tools and multiple tool calls.
-- tools will be called paralelly
-
-```python
-from langchain_core.tools import tool
-from langchain_community.tools import DuckDuckGoSearchRun
-from langchain.messages import HumanMessage, SystemMessage, ToolMessage
-  # This is already a LangChain tool
-duckduckgo_search = DuckDuckGoSearchRun()
-tools = [
-    get_city_weather,
-    duckduckgo_search
+messages = [
+    HumanMessage(content=f"Place this order:\n{order.model_dump_json()}")
 ]
 
-tool_repo = {
-    tool.name: tool
-    for tool in tools
-}
-# tool_repo output
-# {'get_city_weather': StructuredTool(name='get_city_weather', description='Fetches the current weather conditions for a specified city.\n\nUse this tool whenever a user asks about the weather, temperature,\nor humidity in a specific location.\n\nArgs:\n    city (str): The name of the city to check the weather for.\n                Examples: "Delhi", "Mumbai", "Bengaluru", "New York".\n\nReturns:\n    dict: A dictionary containing the weather details with the following keys:\n        - temperature (int): The current temperature in degrees Celsius.\n        - humidity (int): The relative humidity percentage.\n        - condition (str): A brief, readable description of the weather\n                           (e.g., "Hot", "Humid", "Pleasant", "Unknown").', args_schema=<class 'langchain_core.utils.pydantic.get_city_weather'>, func=<function get_city_weather at 0x7aa1cef22700>),
-#  'duckduckgo_search': DuckDuckGoSearchRun(api_wrapper=DuckDuckGoSearchAPIWrapper(region='wt-wt', safesearch='moderate', time='y', max_results=5, backend='auto', source='text'))}
-message_to_send = []
-sysmsg = "IMagine you're a helpful travel assistant, please answer the query carefuly, call the tools if necessary, don't followup just answer"
+while True:
+    response = tool_chain.invoke({"messages": messages})
+    messages.append(response)
 
-# Defining your LLM
-llm = ChatOpenAI(
-    model="gpt-5-mini"
-)
-#Tell your LLM about tools available
-llm_with_tools = llm.bind_tools([get_city_weather, duckduckgo_search])
+    if not response.tool_calls:
+        print(response.content)
+        break
 
-# Make your system prompt
-system_message = SystemMessage(content = sysmsg)
-# Make your user prompt
-user_query = input("Please enter your message: ")
-print()
-user_message = HumanMessage(content = user_query)
+    for call in response.tool_calls:
+        tool_output = place_order.invoke(call["args"])
 
-# COmbine the messages
-messages_to_send = [system_message, user_message]
+        messages.append(
+            ToolMessage(
+                content=json.dumps(tool_output),
+                tool_call_id=call["id"]
+            )
+        )
 
+# Your order has been successfully placed with order ID 12. The total amount is 450.
 
-response = llm_with_tools.invoke(messages_to_send)
-
-# Append the AI message
-messages_to_send.append(response)
-
-if(response.tool_calls):
-  # Get details of the first tool
-  for tool_details in response.tool_calls:
-  # GEt the name of the tool to call
-  tool_name = tool_details['name']
-  # Calling that tool from repo with all tool details
-  tool_output = tool_repo[tool_name].invoke(tool_details) # Ooutput will be tool message
-
-  messages_to_send.append(tool_output)
-  response = llm_with_tools.invoke(messages_to_send)
-  print(response.content)
-else:
-  print(response.content)
-  messages_to_send.append(response)
 ```
 
-- if we want the llm to call tool in a specific sequence
-- recieve the first tool call's response then based on that call the next tool
+- Instead of mutiple LLM calls we can integrate the tool itself with Pydantic
+- **Bind the tool with Pydantic**
+  ```python
+  @tool(args_schema=KioskOrder)
+  ```
 
 ```python
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, SystemMessage
-sysmsg = """
-Imagine you are a helpful travel assistant.
+import sqlite3
+from langchain_core.tools import tool
 
-Answer the user's query carefully and call tools when necessary.
+@tool(args_schema=KioskOrder)
+def place_order(items: list[OrderItem], order_type: str,
+                payment_method: str, discount_percent: int = 0):
+    """Calculate and save a restaurant order."""
 
-You have access to:
-- get_city_weather: Use for weather information from the available database.
-- duckduckgo_search: Use for recent information or web searches.
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
+        saved_items, subtotal = [], 0
+
+        for item in items:
+            row = conn.execute(
+                "SELECT price FROM menu_items WHERE item_code = ?",
+                (item.item_code,)
+            ).fetchone()
+
+            if not row:
+                return {"status": "failed",
+                        "reason": f"Invalid item: {item.item_code}"}
+
+            price = row[0]
+            line_total = price * item.quantity
+            subtotal += line_total
+            saved_items.append(
+                (item.item_code, item.quantity, price, line_total)
+            )
+
+        total = round(subtotal * (1 - discount_percent / 100))
+
+        cur = conn.execute("""
+            INSERT INTO orders
+            (order_type, payment_method, discount_percent, total_amount)
+            VALUES (?, ?, ?, ?)
+        """, (order_type, payment_method, discount_percent, total))
+
+        order_id = cur.lastrowid
+
+        conn.executemany("""
+            INSERT INTO order_items
+            (order_id, item_code, quantity, unit_price, line_total)
+            VALUES (?, ?, ?, ?, ?)
+        """, [(order_id, *item) for item in saved_items])
+
+    return {
+        "order_id": order_id,
+        "status": "placed",
+        "total_amount": total
+    }
+```
+
+- converting the while loop to a langhchain object and build a chain
+- create a function for the while loop and convert it into a runable lambda
+- runnable lamda is a function converted to work with langchain
+
+- tool repo
+
+  ```python
+  from langchain_core.prompts import ChatPromptTemplate
+  from langchain_core.runnables import RunnableLambda
+
+  tools = [place_order]
+  tools_repo1 = {tool.name: tool for tool in tools}
+  tool_llm1 = llm.bind_tools(tools)
+
+  prompt = ChatPromptTemplate.from_messages([
+      (
+          "system",
+          "Place the kiosk order using the tool. "
+          "Use valid menu item codes. "
+          "After the tool succeeds, confirm the order briefly."
+      ),
+      ("human", "{conversation}")
+  ])
+  ```
+
+- while loop within a function
+
+```python
+def run_tool_loop(response):
+    messages = [response]
+
+    while response.tool_calls:
+        for tool_call in response.tool_calls:
+            tool = tools_repo1[tool_call["name"]]
+
+            # Full ToolCall goes in; ToolMessage comes out
+            tool_message = tool.invoke(tool_call)
+            messages.append(tool_message)
+
+        response = tool_llm1.invoke(messages)
+        messages.append(response)
+
+    return response
+```
+
+- **langhchain order chain**
+
+```python
+order_chain = (
+    prompt
+    | tool_llm1
+    | RunnableLambda(run_tool_loop)
+)
+```
+
+- complete flow
+
+```python
+order_text = """
+Customer: Give me two paneer tikkas and one cold coffee.
+This is takeaway, I will pay by UPI.
+Apply a 10 percent discount.
 """
 
-llm = ChatOpenAI(
-    model="gpt-5-mini"
-)
 
-llm_with_tools = llm.bind_tools(
-    [get_city_weather, duckduckgo_search]
-)
+result = order_chain.invoke({
+    "conversation": order_text
+})
 
-system_message = SystemMessage(content=sysmsg)
-
-user_query = input("Please enter your message: ")
-print()
-
-user_message = HumanMessage(content=user_query)
-
-messages_to_send = [
-    system_message,
-    user_message
-]
-
-response = llm_with_tools.invoke(messages_to_send)
-while response.tool_calls:
-    # Preserve the AIMessage containing all tool requests
-    messages_to_send.append(response)
-    # Execute every tool requested in this AIMessage
-    for tool_call in response.tool_calls:
-        tool_name = tool_call["name"]
-        # Find the tool in the repository and execute it
-        tool_output = tool_repo[tool_name].invoke(tool_call)
-        messages_to_send.append(tool_output)
-    response = llm_with_tools.invoke(messages_to_send)
-    print(response.content)
-else:
-    messages_to_send.append(response)
-    print(response.content)
+print(result.content)
 ```
 
-## What I Built / Tried
+- Emailing Syntax
 
--
+```python
+from google.colab import userdata
 
-## Insights & Opinions
+GMAIL_ADDRESS = userdata.get("GMAIL_ADDRESS")
+GMAIL_APP_PASSWORD = userdata.get("GMAIL_APP_PASSWORD")
+CHEF_EMAIL = userdata.get("CHEF_EMAIL")
 
--
+import smtplib
+from email.message import EmailMessage
 
-## Questions / Gaps
+msg = EmailMessage()
+msg["From"] = GMAIL_ADDRESS
+msg["To"] = CHEF_EMAIL
+msg["Subject"] = "Test order"
+msg.set_content("Two paneer tikkas and one cold coffee.")
 
--
+with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+    smtp.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+    smtp.send_message(msg)
 
-## Links to Projects
+print("Email sent")
+```
 
--
+- pydantic class for the email to the chef
+
+```python
+class SendEmailInput(BaseModel):
+    items: list[OrderItem]
+    special_request: str | None = None
+```
+
+- email
+
+```python
+@tool(args_schema=SendEmailInput)
+def send_order_email(
+    items: list[OrderItem],
+    special_request: str | None = None
+):
+    """Send order details to the chef."""
+
+    item_lines = "\n".join(
+        f"- {item.item_code}: {item.quantity}"
+        for item in items
+    )
+
+    msg = EmailMessage()
+    msg["From"] = GMAIL_ADDRESS
+    msg["To"] = CHEF_EMAIL
+    msg["Subject"] = "New Restaurant Order"
+    msg.set_content(
+        f"Items:\n{item_lines}\n\n"
+        f"Special request: {special_request or 'None'}"
+    )
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+        smtp.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
+        smtp.send_message(msg)
+
+    return {"status": "email_sent"}
+```
+
+- repo and binding
+
+```python
+tool_llm2 = llm.bind_tools([send_order_email])
+tools_repo2 = {"send_order_email": send_order_email}
+
+prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        "Read the order, call send_order_email, and confirm after it succeeds."
+    ),
+    ("human", "{conversation}")
+])
+
+def run_tools(response):
+    messages = [response]
+
+    while response.tool_calls:
+        for call in response.tool_calls:
+            tool_message = tools_repo2[call["name"]].invoke(call)
+            messages.append(tool_message)
+
+        response = tool_llm2.invoke(messages)
+        messages.append(response)
+
+    return response
+```
+
+- chain
+
+```python
+email_chain = prompt | tool_llm2 | RunnableLambda(run_tools)
+
+order_text = """
+Give me two paneer tikkas and one cold coffee.
+Make the paneer tikka less spicy.
+"""
+
+result = email_chain.invoke({"conversation": order_text})
+
+print(result.content)
+```
+
+- **building parallel chains**
+
+```python
+from langchain_core.runnables import RunnableParallel
+
+parallel_chain = RunnableParallel(
+    order_result=order_chain,
+    email_result=email_chain
+)
+result = parallel_chain.invoke({
+    "conversation": order_text
+})
+```
+
+### Off topic
+
+- How to mount google drive to collab
+
+```python
+from google.colab import drive
+drive.mount("/content/drive")
+```
+
+- sqlite in collab and stored in G drive
+
+```python
+DB_PATH = "/content/drive/MyDrive/restaurant.db"
+
+conn = sqlite3.connect(DB_PATH)
+
+pd.read_sql("""
+SELECT name
+FROM sqlite_master
+WHERE type = 'table'
+""", conn)
+```
