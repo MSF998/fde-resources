@@ -1,6 +1,9 @@
 # [Topic Name]
 **Date:** YYYY-MM-DD | **Track:** Consultancy | **Session:** XX
 
+## Going In
+-
+
 ## Core Frameworks / Methods
 -
 
@@ -17,4 +20,7 @@
 -
 
 ## Questions / Gaps
+-
+
+## Coming Out
 -

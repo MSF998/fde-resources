@@ -1,6 +1,9 @@
 # [Topic Name]
 **Date:** YYYY-MM-DD | **Track:** Technical | **Session:** XX
 
+## Going In
+-
+
 ## Key Concepts
 -
 
@@ -14,4 +17,7 @@
 -
 
 ## Links to Projects
+-
+
+## Coming Out
 -
