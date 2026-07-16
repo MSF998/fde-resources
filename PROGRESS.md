@@ -21,7 +21,7 @@
 
 <!-- - [x] 01-session-name -->
 
-- [x] [project-discussion](./weekend/project-discssion/)
+- [x] [project-discussion](./weekend/project-discussion/)
 
 ## Projects
 
