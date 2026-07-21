@@ -6,9 +6,9 @@ I'm targeting Forward Deployed Engineering, AI Solutions Engineer, and AI Archit
 
 ## Featured Projects
 
-| Project         | Stack | Description |
-| --------------- | ----- | ----------- |
-| _(coming soon)_ |       |             |
+| Project                                                                                                         | Stack                                                  | Description                                                                                                                        |
+| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [Personal Fitness Tracker AI Assistant](https://github.com/MSF998/fde-01-personal-fitness-tracker-ai-assistant) | Python, FastAPI, Uvicorn, Jinja2, HTML/CSS, JavaScript | An AI-assisted personal fitness tracker web app built with FastAPI and Jinja2 templates, backed by Python for the assistant logic. |
 
 ## Course Coverage
 
