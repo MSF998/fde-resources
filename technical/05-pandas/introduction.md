@@ -1,3 +1,5 @@
+# Pandas
+
 ### Introduction to Pandas & Import
 
 **Explanation:** Pandas (Panel Data) is a core Python library for structured data analysis, functioning as an alternative to Excel capable of processing millions of records without lag. By industry convention, it is imported using the alias `pd`.[cite: 1]

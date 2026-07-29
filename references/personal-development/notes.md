@@ -1,4 +1,4 @@
-## How to get your brain to focus more
+# How to Get Your Brain to Focus More
 
 - Reduce stimulation to the brain
 - Rediscover boredom

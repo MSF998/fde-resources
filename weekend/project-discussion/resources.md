@@ -1,4 +1,4 @@
-# Resources: [Session Name]
+# Resources: Slice Matic Post Development Discussion
 
 ## Tools Used
 -

@@ -1,4 +1,4 @@
-# Resources: [Topic Name]
+# Resources: Prompt Engineering
 
 ## Official Docs
 -

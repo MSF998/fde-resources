@@ -1,3 +1,5 @@
+# Build Session: Identity, Validation, Orchestration & Reliability
+
 - Identity
   - Request ID must come from frontend
   - Order ID should be generated in the backend
