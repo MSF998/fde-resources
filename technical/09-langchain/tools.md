@@ -1,6 +1,6 @@
 # Langchain
 
-**Date:** 2026-07-14 | **Track:** Technical | **Session:** XX
+**Date:** 2026-07-14 | **Track:** Technical | **Session:** 09
 
 ## Key Concepts
 

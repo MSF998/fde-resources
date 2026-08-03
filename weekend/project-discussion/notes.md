@@ -1,6 +1,6 @@
 # Slice Matic Post Development Discussion
 
-**Date:** 2026-11-07 | **Type:** Workshop
+**Date:** 2026-07-11 | **Type:** Workshop
 
 ## What We Covered
 

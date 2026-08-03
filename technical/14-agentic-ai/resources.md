@@ -1,4 +1,4 @@
-# Resources: [Topic Name]
+# Resources: Agentic AI
 
 ## Official Docs
 -

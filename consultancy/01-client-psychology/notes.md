@@ -1,4 +1,4 @@
-# Client Pshycology
+# Client Psychology
 
 **Date:** 2026-04-29 | **Track:** Consultancy | **Session:** 02
 

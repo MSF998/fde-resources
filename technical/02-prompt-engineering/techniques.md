@@ -1,6 +1,6 @@
 # Prompt Engineering
 
-**Date:** 2026-04-25 | **Track:** Technical | **Session:** XX
+**Date:** 2026-04-25 | **Track:** Technical | **Session:** 02
 
 ## Key Concepts
 

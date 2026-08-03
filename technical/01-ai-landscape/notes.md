@@ -1,6 +1,6 @@
 # AI Landscape
 
-**Date:** 20206-01-22 | **Track:** Technical | **Session:** 01
+**Date:** 2026-01-22 | **Track:** Technical | **Session:** 01
 
 ## Key Concepts
 

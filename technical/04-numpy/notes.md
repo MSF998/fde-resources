@@ -1,6 +1,6 @@
 # Numpy
 
-**Date:** 2026-05-14 | **Track:** Technical | **Session:** XX
+**Date:** 2026-05-14 | **Track:** Technical | **Session:** 04
 
 ## Key Concepts
 

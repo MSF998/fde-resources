@@ -1,6 +1,6 @@
 # Domain Context
 
-**Date:** 2026-07-29 | **Track:** Consultancy | **Session:** XX
+**Date:** 2026-07-29 | **Track:** Consultancy | **Session:** 04
 
 ## Going In
 

@@ -1,4 +1,4 @@
-# Resources: [Topic Name]
+# Resources: Domain Context
 
 ## Frameworks / Models
 -

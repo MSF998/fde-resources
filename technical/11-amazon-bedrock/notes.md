@@ -1,6 +1,6 @@
 # Amazon Bedrock
 
-**Date:** 2026-07-29 | **Track:** Technical | **Session:** XX
+**Date:** 2026-07-29 | **Track:** Technical | **Session:** 11
 
 ## Going In
 

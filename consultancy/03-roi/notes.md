@@ -1,6 +1,6 @@
 # Governance & ROI
 
-**Date:** 2026-07-22 | **Track:** Consultancy | **Session:** XX
+**Date:** 2026-07-22 | **Track:** Consultancy | **Session:** 03
 desire 10
 Fear : 7
 Frustration: 3

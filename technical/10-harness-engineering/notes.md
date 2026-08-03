@@ -1,6 +1,6 @@
 # Harness Engineering
 
-**Date:** YYYY-MM-DD | **Track:** Technical | **Session:** XX
+**Date:** 2026-07-29 | **Track:** Technical | **Session:** 10
 
 ## Going In
 

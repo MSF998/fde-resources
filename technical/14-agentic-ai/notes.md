@@ -1,6 +1,6 @@
-# [Topic Name]
+# Agentic AI
 
-**Date:** YYYY-MM-DD | **Track:** Technical | **Session:** XX
+**Date:** 2026-07-31 | **Track:** Technical | **Session:** 14
 
 ## Going In
 

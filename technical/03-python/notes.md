@@ -1,6 +1,6 @@
 # Python Refresher
 
-**Date:** 2026-05-12 | **Track:** Technical | **Session:** XX
+**Date:** 2026-05-12 | **Track:** Technical | **Session:** 03
 
 ## Key Concepts
 

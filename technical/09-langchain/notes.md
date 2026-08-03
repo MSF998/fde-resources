@@ -1,6 +1,6 @@
 # Langchain & Pydantic
 
-**Date:** 2026-17-16 | **Track:** Technical | **Session:** XX
+**Date:** 2026-07-16 | **Track:** Technical | **Session:** 09
 
 ## Key Concepts
 

@@ -1,6 +1,6 @@
 # Machine Learning
 
-**Date:** 2026-05-28 | **Track:** Technical | **Session:** XX
+**Date:** 2026-05-28 | **Track:** Technical | **Session:** 07
 
 ## Going In
 

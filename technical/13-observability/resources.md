@@ -1,4 +1,4 @@
-# Resources: [Topic Name]
+# Resources: Observability
 
 ## Official Docs
 -

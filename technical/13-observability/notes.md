@@ -1,6 +1,6 @@
-# [Topic Name]
+# Observability
 
-**Date:** YYYY-MM-DD | **Track:** Technical | **Session:** XX
+**Date:** 2026-07-31 | **Track:** Technical | **Session:** 13
 
 ## Going In
 

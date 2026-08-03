@@ -1,6 +1,6 @@
 # Strands Agents SDK
 
-**Date:** YYYY-MM-DD | **Track:** Technical | **Session:** XX
+**Date:** 2026-07-29 | **Track:** Technical | **Session:** 12
 
 ## Going In
 

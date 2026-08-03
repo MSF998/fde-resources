@@ -1,6 +1,6 @@
 # Pricing
 
-**Date:** YYYY-MM-DD | **Track:** Consultancy | **Session:** XX
+**Date:** 2026-07-15 | **Track:** Consultancy | **Session:** 02
 
 ## Core Frameworks / Methods
 
