@@ -55,7 +55,7 @@
 
 ## To Do
 
-- [ ] [Backend from first principles](https://www.youtube.com/playlist?list=PLui3EUkuMTPgZcV0QhQrOcwMPcBCcd_Q1) — Sriniously playlist, 23 videos
+- [ ] [Backend from first principles](https://www.youtube.com/playlist?list=PLui3EUkuMTPgZcV0QhQrOcwMPcBCcd_Q1) — Sriniously playlist, 23 videos — notes in [self-study/backend-first-principles](./self-study/backend-first-principles/notes.md)
   - [ ] [1. Roadmap for backend from first principles](https://www.youtube.com/watch?v=0Rwb4Xmlcwc&list=PLui3EUkuMTPgZcV0QhQrOcwMPcBCcd_Q1) (31:24)
   - [ ] [2. Walk the path of a true backend engineer](https://www.youtube.com/watch?v=3qFjZbFRSAU&list=PLui3EUkuMTPgZcV0QhQrOcwMPcBCcd_Q1) (3:53)
   - [ ] [3. What is a Backend, how do they work and why do we need them?](https://www.youtube.com/watch?v=6Ss4dJD9Kzg&list=PLui3EUkuMTPgZcV0QhQrOcwMPcBCcd_Q1) (19:01)
