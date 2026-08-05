@@ -30,8 +30,7 @@
 -
 
 ## Questions / Gaps
-- OAuth2.0
-- Sigv4
+-
 
 ## Links to Projects
 -

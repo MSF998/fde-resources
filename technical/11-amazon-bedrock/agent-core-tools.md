@@ -29,8 +29,7 @@
 -
 
 ## Questions / Gaps
-- playwright
-- ephemeral
+-
 
 ## Links to Projects
 -

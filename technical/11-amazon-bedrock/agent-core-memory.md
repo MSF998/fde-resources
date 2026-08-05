@@ -49,5 +49,4 @@
 
 ## Questions / Gaps
 
-- Namespace
-- checkpoint
+-

@@ -88,4 +88,4 @@
 
 ## Questions / Gaps
 
-- Commerical models of Saleforce and Adobe
+-

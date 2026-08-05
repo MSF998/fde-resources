@@ -82,4 +82,4 @@
 
 ## Questions / Gaps
 
-- Learn how to build a BRD (Business Requirements Document)
+-

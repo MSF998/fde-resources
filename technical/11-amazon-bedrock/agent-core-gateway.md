@@ -36,15 +36,7 @@
 
 ## Questions / Gaps
 
-- OAuth
-- Inbound
-- Outbound
-- ARN
-- tenant isolation
-- Ingress Trafic
-- VPC endpoint
-- JWT Tokens
-- IAM Roles
+-
 
 ## Links to Projects
 
