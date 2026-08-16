@@ -21,8 +21,9 @@
     - AG-UI: standardize how human instructions are handled and streaming UI updates
     - A2A : Agent to agent protocol facilitates agent communication for collabration. Like TCP IP
     - MCP: a protocol that standardizes tool calls and context handling with different models.
-      - interacts with
+      - Components
         - tools
+          - functions with a name, description, and JSON schema for arguments
         - resources
         - prompt templates
 
