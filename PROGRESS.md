@@ -39,7 +39,7 @@
 
 - [x] [01-personal-fitness-tracker-ai-assistant](https://github.com/MSF998/fde-01-personal-fitness-tracker-ai-assistant)
 - [ ] [02-patient-report-simplifier](https://github.com/MSF998/fde-02-patient-report-simplifier)
-- [ ] 03-youtube-trending-channel-analysis
+- [ ] [03-youtube-trending-channel-analysis](https://github.com/MSF998/fde-03-youtube-trending-channel-analysis)
 - [ ] 04-hotel-revenue-prediction
 - [ ] 05-full-stack-ai-ordering-system
 - [ ] [06-freight-logistics-ops](./projects/06-freight-logistics-ops/) — domain research only, not yet built
