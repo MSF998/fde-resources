@@ -20,15 +20,25 @@
   - Retrivel
   - Generation
 
-- self RAG
-- corrective RAG
-- hybrid RAG
-  - decide
-    - No RAG, keyword based search, semantic, regex (grep)
-- graph RAG
-  - knowledge graph
-    - graph representaion of our data
-    - neo4j
+- Types of RAG
+  - self RAG
+    - llm decides if retrieval is required
+    - is relevant
+    - is useful
+    - is supporting
+    - stage of evaluation
+      - post generation stage
+  - corrective RAG
+    - stage of evaluation
+      - retrieved output
+      - is the retrieval useful
+  - hybrid RAG
+    - decide
+      - No RAG, keyword based search, semantic, regex (grep)
+  - graph RAG
+    - knowledge graph
+      - graph representaion of our data
+      - neo4j
 
 - Chunking
   - divide a large doc into small parts
@@ -43,8 +53,16 @@
       - choose a delimeter
     - recursive character chunking
     - prepostion chunking
-
-- ## types of chunking strategies
+  - character text splitter
+    - define
+      - delimeter
+      - chunk size
+      - chunk overlap
+  - recursive character text splitter
+    - sequence decided to follow
+      - \n -> newline
+      - ' ' -> separator
+      - " " -> character
 
 - Embedding
   - Mathematical representation of a word.

@@ -33,6 +33,14 @@
     - is fault tolerant
     - is available
 
+- picking the right DB
+    - what data to be stored
+      - structured
+      - semi structured
+      - unstructured
+    - how much data
+    - access pattern
+
 ## What I Built / Tried
 
 -
